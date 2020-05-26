@@ -1,8 +1,34 @@
-import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 
 export default function App() {
+  const [display, setDisplay] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleOp = (op) => {
+    if (op === 'C') {
+      setDisplay('')
+      setResult('')
+    }
+    else if (op === '=') {
+      setDisplay(result)
+      setResult('')
+    }
+    else {
+      const novoDisplay = display + op
+      let novoResult = result
+      try {
+        let fixedOperation = novoDisplay.split('x').join('*')
+        fixedOperation = fixedOperation.split('÷').join('/')
+        fixedOperation = fixedOperation.split(',').join('.')
+        novoResult = String(eval(fixedOperation)).toString()
+      } catch (e) {}
+      setResult(novoResult)
+      setDisplay(novoDisplay)
+    }
+  }
+
   const col1Buttons = [
     ['7', '8', '9'],
     ['4', '5', '6'],
@@ -14,24 +40,25 @@ export default function App() {
 
   return (
     <View style={styles.container} >
-      <Text style={styles.display}>Display</Text>
-      <Text style={styles.result}>Result</Text>
+      <Text style={styles.display}>{display}</Text>
+      <Text style={styles.result}>{result}</Text>
       <View style={styles.buttons}>
         <View style={styles.col1}>
-          { col1Buttons.map((line, index) => <View key={index} style={styles.line}>
+          { col1Buttons.map((line, index) =>
+            <View key={index} style={styles.line}>
             { line.map(op =>
-              <View key={op} style={styles.btn}>
+              <TouchableOpacity key={op} style={styles.btn} onPress={() => handleOp(op)}>
                 <Text style={styles.btnText}>{op}</Text>
-              </View>
+              </TouchableOpacity>
               )}
             </View>
           )}
         </View>
         <View style={styles.col2}>
         { col2Buttons.map((op) =>
-          <View key={op} style={styles.btn}>
+          <TouchableOpacity key={op} style={styles.btn} onPress={() => handleOp(op)}>
             <Text style={styles.btnText}>{op}</Text>
-          </View>
+          </TouchableOpacity>
         )}
         </View>
       </View>
@@ -68,11 +95,11 @@ const styles= StyleSheet.create({
   },
   col1: {
     flex: 3,
-    backgroundColor: 'gray'
+    backgroundColor: '#000000'
   },
   col2: {
     flex: 1,
-    backgroundColor: 'red'
+    backgroundColor: '#0a0a0a'
   },
   line: {
     flex: 1,
@@ -84,7 +111,8 @@ const styles= StyleSheet.create({
   },
   btnText: {
     textAlign: 'center',
-    fontSize: 50
+    fontSize: 50,
+    color: 'white'
   }
 })
 
